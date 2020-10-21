@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:api-gateway="http://www.mulesoft.org/schema/mule/api-gateway"
+	xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce"
+	xmlns:anypoint-mq="http://www.mulesoft.org/schema/mule/anypoint-mq" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd 
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/anypoint-mq http://www.mulesoft.org/schema/mule/anypoint-mq/current/mule-anypoint-mq.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/mule/api-gateway/current/mule-api-gateway.xsd">
+    <http:listener-config name="salesforce-customer-system-api-httpListenerConfig">
+        <http:listener-connection host="0.0.0.0" port="${http.port}" />
+    </http:listener-config>
+    <apikit:config name="salesforce-customer-system-api-config" api="salesforce-customer-system-api.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+    <global-property doc:name="Global Property" doc:id="4ddd89ce-72a8-49d0-b576-ee924288ed4d" name="env" value="qa" />
+	<configuration-properties doc:name="Configuration properties" doc:id="286a81b9-b674-460c-b951-b8b4baf601ef" file="env/${env}.yaml" />
+	<anypoint-mq:config name="Anypoint_MQ_Config" doc:name="Anypoint MQ Config" doc:id="74863a22-a839-4511-a8ad-5e13ec0941ca" >
+		<anypoint-mq:connection url="${mq.url}" clientId="${mq.client-id}" clientSecret="${mq.client-secret}" />
+	</anypoint-mq:config>
+	<salesforce:sfdc-config name="Salesforce_Config_scotts_basic" doc:name="Salesforce Config" doc:id="82b6a7c3-cbb3-4c90-b084-fbcaeb44f1dc" >
+		<salesforce:basic-connection username="${sf.username}" password="${sf.password}" securityToken="${sf.securityToken}" url="${sf.tokenEndpoint}"/>
+	</salesforce:sfdc-config>
+</mule>

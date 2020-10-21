@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:validation="http://www.mulesoft.org/schema/mule/validation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd">
+	<sub-flow name="customer-upsert" doc:id="5c6e6505-3e80-4a27-a5b8-4b8c21980b0f" >
+		<salesforce:upsert doc:name="Upsert" doc:id="46bb8353-def8-4ce5-8433-2c3939690831" config-ref="Salesforce_Config_scotts_basic" externalIdFieldName="#[vars.externalId]" objectType="#[vars.objectType]">
+			<error-mapping targetType="CUSTOMERSF:INVALID_TYPE_ON_FIELD_IN_RECORD"/>
+		</salesforce:upsert>
+		<ee:transform doc:name="Transform Message" doc:id="6dba931b-0161-4ab9-b1d0-9c2d136de969" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="8b6cb687-b46c-4648-bbd0-ad832433e8f4" message="#[payload]"/>
+		<flow-ref doc:name="validation-customers" doc:id="720f7b1f-13b9-4bd2-abf8-f71b92bd3565" name="validation-customers"/>
+	</sub-flow>
+	<sub-flow name="validation-customers" doc:id="0d61bd23-82fb-4aa2-83cf-153e20ed4ec2" >
+	<validation:is-true doc:name="INVALID_FIELD" doc:id="10c6a0be-babd-4eba-aab7-dd81ed1611b6" expression="#[payload.successful and payload.items[0].statusCode == 'INVALID_TYPE_ON_FIELD_IN_RECORD']" message="#[payload.items[0].message]">
+			<error-mapping sourceType="VALIDATION:INVALID_BOOLEAN" targetType="CUSTOMERSF:INVALID_TYPE_ON_FIELD_IN_RECORD" />
+		</validation:is-true>
+		<validation:is-true doc:name="UNKNOWN_ERROR" doc:id="922fe60c-50c8-4759-874a-cb84da2f3962" expression="#[payload.successful]" message="#[payload.items[0].message]">
+			<error-mapping sourceType="VALIDATION:INVALID_BOOLEAN" targetType="CUSTOMERSF:UNKNOWN_ERROR" />
+		</validation:is-true>
+	
+</sub-flow>
+</mule>

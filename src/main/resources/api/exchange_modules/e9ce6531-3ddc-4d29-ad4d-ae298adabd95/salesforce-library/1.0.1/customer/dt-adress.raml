@@ -1,0 +1,38 @@
+#%RAML 1.0 DataType
+properties:
+  addressType:
+    type: object
+    properties:
+      streetAddressOne:
+        type: string
+        description: Street Address One
+        displayName: Street Address One
+      cityCode:
+        type: string
+        description: City Code
+        displayName: City Code
+      countryCode:
+        type: string
+        description: Country Code
+        displayName: Country Code
+      geographicalCoordinates:
+        type: string
+        description: Geographical Coordinates
+        displayName: Geographical Coordinates
+      provinceCode:
+        type: string
+        description: Province Code
+        displayName: Province Code
+      postalCode:
+        type: string
+        description: Postal Code
+        displayName: Postal Code
+  
+example:
+  addressType: 
+    cityCode: ''
+    countryCode: ''
+    geographicalCoordinates: ''
+    streetAddressOne: ''
+    provinceCode: ''
+    postalCode: ''

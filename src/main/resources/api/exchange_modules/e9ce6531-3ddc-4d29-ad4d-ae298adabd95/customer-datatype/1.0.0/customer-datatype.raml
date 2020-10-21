@@ -1,0 +1,51 @@
+#%RAML 1.0 Library
+
+types:
+  address:
+    description: Address datatype
+    properties:
+      street?:
+        description: Property description
+        example: 44 Shirley Ave.
+        type: string
+      city?:
+        description: Property description
+        example: West Chicago
+        type: string
+      postalCode?:
+        description: Property description
+        example: "60185"
+        type: string
+      state?:
+        description: Property description
+        example: IL
+        type: string
+      country?:
+        description: Property description
+        example: USA
+        type: string
+  contact:
+    description: Contact datatype
+    properties:
+      id?:
+        example: "000000001"
+        type: string
+      customerId?:
+        example: "0000001"
+        type: string
+      firstName:
+        example: Matt
+        type: string
+      lastName:
+        example: Rock
+        type: string
+      phone?:
+        example: +1-202-555-0180
+        type: string
+      email?:
+        example: email@example.com
+        type: string
+      deliveryAddress?:
+        type: address
+      postalAddress?:
+        type: address

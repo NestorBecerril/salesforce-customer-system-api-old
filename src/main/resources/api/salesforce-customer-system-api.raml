@@ -1,0 +1,37 @@
+#%RAML 1.0
+baseUri: https://anypoint.mulesoft.com/mocking/api/v1/links/4efd9493-ec87-431a-9b56-0b6458376830/ # 
+title: Salesforce - Customer - System API
+
+protocols:
+  - HTTP
+  - HTTPS
+
+uses:
+  CustomerReqs: /exchange_modules/e9ce6531-3ddc-4d29-ad4d-ae298adabd95/salesforce-library/1.0.1/salesforce-library.raml
+
+/v1/sys/salesforce: 
+  /customer-sync:
+    post:
+      displayName: Customer Sync
+      description: Connect to salesforce and sync customers 
+      queryParameters:
+        transactionId:
+          type: string
+          required: false
+          displayName: transactionId
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+      body:
+        application/json:
+          type: array
+          items: CustomerReqs.Customer
+      responses:
+        200:
+          body:
+            application/json:
+              type: object
+              properties:
+                code: integer
+                message: string
+              example:
+                code: 200
+                message: "Success"

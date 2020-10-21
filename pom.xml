@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>e9ce6531-3ddc-4d29-ad4d-ae298adabd95</groupId>
+    <artifactId>scotts-nonprod-salesforce-customer-sys-api</artifactId>
+    <version>1.0.0</version>
+    <packaging>mule-application</packaging>
+
+	<name>salesforce-customer-system-api</name>
+
+    <description/>
+    <properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+		<app.runtime>4.2.2</app.runtime>
+		<mule.maven.plugin.version>3.3.5</mule.maven.plugin.version>
+		
+		<anypoint.uri>https://anypoint.mulesoft.com</anypoint.uri>
+		<business.group>Scotts IT Apps</business.group>
+		<mule.version>4.2.2</mule.version>
+		<username>nibv</username>
+		<password>Welcome1</password>
+		<application.name>scotts-nonprod-salesforce-customer-sys-api</application.name>
+		<target>rtf-nonprod</target>
+		<environment>NonProd</environment>
+		<provider>MC</provider>
+		<http.port>8081</http.port>
+		<anypoint.platform.client_id>f471f9bf5002445e849144404d14c432</anypoint.platform.client_id>
+		<anypoint.platform.client_secret>b8F6435e5FfF42fe85da0eF1004Ce85D</anypoint.platform.client_secret>
+		<app.cores>100m</app.cores>
+		<app.memory>500Mi</app.memory>
+		<url>rtf-nonprod.cc.us.scottsco.com/</url>
+		<url.base.path>scotts-nonprod-</url.base.path>
+		<url.path>salesforce-customer-sys-api</url.path>		
+		
+	</properties>
+
+	<build>
+	<resources>
+		<resource>
+			<directory>src/main/api</directory>
+		</resource>
+		<resource>
+			<directory>src/main/resources</directory>
+		</resource>
+	</resources>
+		<plugins>
+			<plugin>
+				<groupId>org.mule.tools.maven</groupId>
+				<artifactId>mule-maven-plugin</artifactId>
+				<version>${mule.maven.plugin.version}</version>
+				<extensions>true</extensions>
+				<configuration>
+				    <runtimeFabricDeployment>
+				      <uri>${anypoint.uri}</uri>
+				      <businessGroup>${business.group}</businessGroup>
+				      <!--businessGroupId>e9ce6531-3ddc-4d29-ad4d-ae298adabd95</businessGroupId-->
+				      <muleVersion>${mule.version}</muleVersion>
+				      <username>${username}</username>
+				      <password>${password}</password>
+				      <applicationName>${application.name}</applicationName>
+				      <target>${target}</target>
+				      <environment>${environment}</environment>
+				      <provider>${provider}</provider>
+				      <properties>
+				        <http.port>${http.port}</http.port>
+				        <anypoint.platform.client_id>${anypoint.platform.client_id}</anypoint.platform.client_id>
+				        <anypoint.platform.client_secret>${anypoint.platform.client_secret}</anypoint.platform.client_secret>
+				      </properties>
+				      <deploymentSettings>
+				        <publicUrl>${url}${url.base.path}${url.path}</publicUrl>
+				        <cpuReserved>${app.cores}</cpuReserved>
+				        <memoryReserved>${app.memory}</memoryReserved>
+				      </deploymentSettings>
+				    </runtimeFabricDeployment>
+                </configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<dependencies>
+    	<dependency>
+            <groupId>com.mulesoft.connectors</groupId>
+            <artifactId>anypoint-mq-connector</artifactId>
+            <version>3.1.1</version>
+            <classifier>mule-plugin</classifier>
+        </dependency>
+    	<dependency>
+            <groupId>com.mulesoft.connectors</groupId>
+            <artifactId>mule-salesforce-connector</artifactId>
+            <version>10.4.3</version>
+            <classifier>mule-plugin</classifier>
+        </dependency>
+    	<dependency>
+            <groupId>org.mule.modules</groupId>
+            <artifactId>mule-apikit-module</artifactId>
+            <version>1.3.16</version>
+            <classifier>mule-plugin</classifier>
+        </dependency>
+    	<dependency>
+            <groupId>org.mule.connectors</groupId>
+            <artifactId>mule-http-connector</artifactId>
+            <version>1.5.22</version>
+            <classifier>mule-plugin</classifier>
+        </dependency>
+    	<dependency>
+            <groupId>org.mule.connectors</groupId>
+            <artifactId>mule-sockets-connector</artifactId>
+            <version>1.2.0</version>
+            <classifier>mule-plugin</classifier>
+        </dependency>
+    	<dependency>
+            <groupId>org.mule.modules</groupId>
+            <artifactId>mule-validation-module</artifactId>
+            <version>1.4.0</version>
+            <classifier>mule-plugin</classifier>
+        </dependency>
+    </dependencies>
+
+	<repositories>
+          <repository>
+            <id>anypoint-exchange-v2</id>
+            <name>Anypoint Exchange</name>
+            <url>https://maven.anypoint.mulesoft.com/api/v2/maven</url>
+            <layout>default</layout>
+        </repository>
+        <repository>
+            <id>mulesoft-releases</id>
+            <name>MuleSoft Releases Repository</name>
+            <url>https://repository.mulesoft.org/releases/</url>
+            <layout>default</layout>
+        </repository>
+    </repositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>mulesoft-releases</id>
+            <name>mulesoft release repository</name>
+            <layout>default</layout>
+            <url>https://repository.mulesoft.org/releases/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
+
+</project>

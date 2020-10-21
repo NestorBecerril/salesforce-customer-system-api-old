@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:anypoint-mq="http://www.mulesoft.org/schema/mule/anypoint-mq" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd 
+http://www.mulesoft.org/schema/mule/anypoint-mq http://www.mulesoft.org/schema/mule/anypoint-mq/current/mule-anypoint-mq.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+    <flow name="salesforce-customer-system-api-main">
+        <http:listener config-ref="salesforce-customer-system-api-httpListenerConfig" path="/api/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:router config-ref="salesforce-customer-system-api-config" />
+        <error-handler>
+            <on-error-propagate type="APIKIT:BAD_REQUEST">
+                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Bad request"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">400</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_FOUND">
+                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Resource not found"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:METHOD_NOT_ALLOWED">
+                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Method not allowed"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">405</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_ACCEPTABLE">
+                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Not acceptable"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">406</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:UNSUPPORTED_MEDIA_TYPE">
+                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Unsupported media type"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">415</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_IMPLEMENTED">
+                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Not Implemented"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">501</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="CUSTOMERSF:INVALID_TYPE_ON_FIELD_IN_RECORD" enableNotifications="true" logException="true">
+                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+   errors:{
+        id:"400",
+        code:"SF-400",
+        status:"400",
+        title:"Bad request",
+        detail:error.detailedDescription default "Bad request",
+        href:"https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html"        
+   }
+}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus"><![CDATA[400]]></ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="CUSTOMERSF:UNKNOWN_ERROR" enableNotifications="true" logException="true">
+                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+   errors:{
+        id:"500",
+        code:"SF-500",
+        status:"500",
+        title:"UNKNOWN_ERROR",
+        detail:error.detailedDescription default "Internal Server Error",
+        href:"https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html"        
+   }
+}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus"><![CDATA[400]]></ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="89c4055d-256a-43b7-bbac-174809542835" type="ANY">
+                <ee:transform xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" doc:id="612e3d1b-64d6-4dec-a9b6-9f6e1ad7752d">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+   errors:{
+            id:"500",
+            code:"ERR500",
+            status:"500",
+            title:"Internal Server Error",
+            detail:error.detailedDescription,
+            href:"https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html"
+   }
+}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus"><![CDATA[500]]></ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+    <flow name="salesforce-customer-system-api-console">
+        <http:listener config-ref="salesforce-customer-system-api-httpListenerConfig" path="/console/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:console config-ref="salesforce-customer-system-api-config" />
+        <error-handler>
+            <on-error-propagate type="APIKIT:NOT_FOUND">
+                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Resource not found"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+    <flow name="post:\v1\sys\salesforce\customer-sync:application\json:salesforce-system-api-config">
+        <flow-ref doc:name="get-transactionId" doc:id="39233431-4c8a-44ce-9dfa-d03c5088ebcc" name="get-transactionId"/>
+		<flow-ref doc:name="sf-customer-orchestador" doc:id="9d575988-c9bd-46c2-bbe1-1953164cc65e" name="sf-customer-orchestador"/>
+    </flow>
+    <flow name="salesforce-system-apiFlow" doc:id="e76802ed-283c-40c6-a5ab-d7f069fb62d6" >
+		<anypoint-mq:subscriber doc:name="Subscriber" doc:id="75b77be4-189b-41d1-a5a2-664752cfff5f" config-ref="Anypoint_MQ_Config" destination="${mq.queue}" outputMimeType="application/json" acknowledgementMode="IMMEDIATE"/>
+		<logger level="INFO" doc:name="Logger" doc:id="78612b8a-6ffc-4743-8455-54984147bb0a" message="SuscriberMQ customer-management.customer #[payload]"/>
+		<flow-ref doc:name="get-transactionId" doc:id="1b31fb29-de54-4823-bd18-911d6f840714" name="get-transactionId"/>
+		<flow-ref doc:name="sf-customer-orchestador" doc:id="52ccb4db-7a67-40e4-9f4c-0b58cc08e961" name="sf-customer-orchestador"/>
+	</flow>
+	<flow name="salesforce-customer-system-apiFlow1" doc:id="83d6838e-5be7-46fc-b040-995c6cce7299" >
+		<salesforce:replay-channel-listener streamingChannel="/data/AccountChangeEvent" replayOption="ONLY_NEW" doc:name="Replay channel listener" doc:id="5cfa9b03-3a38-4bb8-a593-76714ed4cbd7" config-ref="Salesforce_Config_scotts_basic"/>
+		<ee:transform doc:name="Transform Message" doc:id="fbaa7a82-afc5-445e-9d59-9344b81571c6" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="f730aa8d-1d54-4392-b613-9f9b50c8c84e" message="#[payload]"/>
+		<flow-ref doc:name="execute-soql" doc:id="a5626d4c-c980-434c-a9df-19c9ec47df62" name="execute-soql"/>
+	</flow>
+	<sub-flow name="execute-soql" doc:id="31e33091-041f-401e-a1a6-5d89d3f4ac6c" >
+		<flow-ref doc:name="prepare-payload-select" doc:id="4dc26580-67e6-456f-863c-8ecce891ae0c" name="prepare-payload-select"/>
+		<flow-ref doc:name="soql-select-customer" doc:id="63e2ca9c-b98a-4128-aced-1c29f891bfd9" name="soql-select-customer"/>
+		<ee:transform doc:name="Transform Message" doc:id="372353ba-f5fc-40eb-8def-0b5b652f2be3" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="14555d1b-c4ef-47cc-a99c-1f3bdb0514c9" />
+	</sub-flow>
+	<sub-flow name="prepare-payload-select" doc:id="bb4e2587-bb71-4166-9565-4576ecbaf70f" >
+		<ee:transform doc:name="Transform Message" doc:id="9aede65f-c9cf-4212-8572-16323bebe09e" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="recordIds" ><![CDATA[%dw 2.0
+output application/json
+---
+payload.data.payload.ChangeEventHeader.recordIds[0]]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+	</sub-flow>
+	<sub-flow name="soql-select-customer" doc:id="66188e65-9d66-4e74-ab9b-a7197ce9be74" >
+		<salesforce:query doc:name="Query" doc:id="ff7e1ade-d91a-40fc-b12b-6d7132aac380" config-ref="Salesforce_Config_scotts_basic">
+			<salesforce:salesforce-query >SELECT AccountNumber,AccountSource,AnnualRevenue,BillingAddress,BillingCity,BillingCountry,BillingGeocodeAccuracy,BillingLatitude,BillingLongitude,BillingPostalCode,BillingState,BillingStreet,ChannelProgramLevelName,ChannelProgramName,CreatedById,CreatedDate,Description,Fax,FirstName,HAW_BLN_Allow_Customer_Registration__pc,HAW_FOR_Ultimate_parent__c,HAW_NUM_Number_of_reimbursements__c,HAW_NUM_SAP_Payer_number__c,HAW_NUM_Year_Started__c,HAW_REL_Secondary_Owner__c,HAW_REL_Technical_Services_Contact__c,HAW_ROL_Total_Open_Deal_value__c,HAW_SEL_Customer_tier__c,HAW_SEL_HubSpot_Team__c,HAW_TX_Company_Domain_Name__c,HAW_TX_CUSTID__c,HAW_TX_Ship_To__c,HAW_TX_Sold_To__c,Id,Industry,IsCustomerPortal,IsDeleted,IsPartner,IsPersonAccount,Jigsaw,JigsawCompanyId,LastActivityDate,LastModifiedById,LastModifiedDate,LastName,LastReferencedDate,LastViewedDate,Load_ID__c,MasterRecordId,MiddleName,Name,NumberOfEmployees,OwnerId,ParentId,PersonContactId,PersonDepartment,PersonEmail,PersonEmailBouncedDate,PersonEmailBouncedReason,PersonIndividualId,PersonLastCURequestDate,PersonLastCUUpdateDate,PersonMailingAddress,PersonMailingCity,PersonMailingCountry,PersonMailingGeocodeAccuracy,PersonMailingLatitude,PersonMailingLongitude,PersonMailingPostalCode,PersonMailingState,PersonMailingStreet,PersonMobilePhone,PersonOtherAddress,PersonOtherCity,PersonOtherCountry,PersonOtherGeocodeAccuracy,PersonOtherLatitude,PersonOtherLongitude,PersonOtherPostalCode,PersonOtherState,PersonOtherStreet,PersonTitle,Phone,PhotoUrl,Rating,RecordTypeId,Salutation,SCT_BOL_Active__c,SCT_BOL_Hawthorne_Customer__c,SCT_BOL_Scotts_Customer__c,SCT_CUR_Accumulated_Goodwill__c,SCT_DT_Last_Activity__c,SCT_EM_Email_2__c,SCT_EM_Email_3__c,SCT_EM_Email_4__c,SCT_ID_Gigya_ID__c,SCT_ID_Knock_Knock_ID__c,SCT_ID_Lunarly_ID__c,SCT_ID_Magento_ID__c,SCT_ID_Recharge_ID__c,SCT_ID_Recurly_ID__c,SCT_ID_Zaius_ID__c,SCT_NUM_Number_of_reimbursements__c,SCT_PH_Phone_2__c,SCT_PH_Phone_3__c,SCT_PH_Phone_4__c,SCT_Status__c,SCT_TX_SAP_ID__c,ShippingAddress,ShippingCity,ShippingCountry,ShippingGeocodeAccuracy,ShippingLatitude,ShippingLongitude,ShippingPostalCode,ShippingState,ShippingStreet,SicDesc,Site,Suffix,SystemModstamp,Type,Website
+FROM Account 
+WHERE Id = ':recordId'</salesforce:salesforce-query>
+			<salesforce:parameters ><![CDATA[#[output application/java
+---
+{
+	"recordId" : vars.recordIds
+}]]]></salesforce:parameters>
+		</salesforce:query>
+	</sub-flow>
+</mule>

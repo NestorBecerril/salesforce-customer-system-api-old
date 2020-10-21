@@ -1,0 +1,92 @@
+#%RAML 1.0 DataType
+properties:
+  aditionalIdentifierNumber:
+    type: string
+    description: Aditional Identifier Number
+    displayName: Aditional Identifier Number
+  organisationName:
+    type: string
+    description: Organisation Name
+    displayName: Organisation Name
+  financialInstitutionName:
+    type: string
+    description: Financial Institution Name
+    displayName: Financial Institution Name
+  accountRating?:
+    type: string
+    description: Account Rating
+    displayName: Account Rating
+  accountSource?:
+    type: string
+    description: Account Source 
+    displayName: Account Source
+  contactTypeCode?:
+    type: string
+    description: Contact Type Code
+    displayName: Contact Type Code
+  isActive?:
+    type: string
+    description: Is Active
+    displayName: Is Active
+  yearSarted?:
+    type: string
+    description: Year Sarted
+    displayName: Year Sarted
+  transactionalPartyType:
+    properties:
+      contact:
+        type: object
+        properties:
+          shippingAddress:
+            type: !include dt-adress.raml
+          billingAddress:
+            type: !include dt-adress.raml
+          contactType:
+            type: array
+            items:
+              type: object
+              properties:
+                communicationChannelType:
+                  type: object
+                  properties:
+                    communicationValue:
+                      type: string
+                      displayName: Communication Value
+                      description: Communication Value
+                    communicationChannelName:
+                      type: string
+                      displayName: Communication Channel Name
+                      description: Communication Channel Name
+
+example:
+  aditionalIdentifierNumber: ''
+  organisationName: ''
+  financialInstitutionName: ''
+  accountRating: ''
+  accountSource: ''
+  contactTypeCode: ''
+  isActive: ''
+  yearSarted: ''
+  transactionalPartyType: 
+    contact: 
+      billingAddress:
+        addressType: 
+          cityCode: ''
+          countryCode: ''
+          geographicalCoordinates: ''
+          streetAddressOne: ''
+          provinceCode: ''
+          postalCode: ''
+      shippingAddress:
+        addressType: 
+          cityCode: ''
+          countryCode: ''
+          geographicalCoordinates: ''
+          streetAddressOne: ''
+          provinceCode: ''
+          postalCode: ''
+      contactType:
+        -
+          communicationChannelType:
+            communicationChannelName: ''
+            communicationValue: ''

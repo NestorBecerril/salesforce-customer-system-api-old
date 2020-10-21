@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+	<sub-flow name="setStartTimeTracker" doc:id="9ede9dbb-9ff5-43d7-8707-d735efaf81cf">
+		<ee:transform doc:name="Transform Message" doc:id="eda0711e-60b0-4334-bb3d-f9f63aad2e88">
+			<ee:message />
+			<ee:variables>
+				<ee:set-variable variableName="startTimeTracker"><![CDATA[%dw 2.0
+output application/json
+---
+now()]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+	</sub-flow>
+	<sub-flow name="setEndTimeTracker" doc:id="52a66588-af15-4b16-afcf-843db11654bc" >
+		<ee:transform doc:name="Transform Message" doc:id="dccf5345-4947-4a7f-b427-d07b90d0d493" >
+			<ee:message />
+			<ee:variables >
+				<ee:set-variable variableName="endTimeTracker" ><![CDATA[%dw 2.0
+output application/json
+fun getTimeMeasurement(startTime) = now() - startTime
+---
+log("EndTimeTracker", getTimeMeasurement(vars.startTimeTracker default now()))]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+	</sub-flow>
+	<sub-flow name="get-transactionId" doc:id="73dbe044-e11a-44ca-af70-8d2b7844836e" >
+		<ee:transform doc:name="Transform Message" doc:id="d27f8048-4fd3-454f-a584-3e32939aa98e" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="transactionId" ><![CDATA[attributes.queryParams.transactionId default '0000-0000-0000-0000']]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+	</sub-flow>
+	
+</mule>

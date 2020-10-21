@@ -1,0 +1,20 @@
+http:
+    port: "8081"
+    path: "/api/*"
+    
+mq:
+    url: "https://mq-us-west-2.anypoint.mulesoft.com/api/v1"
+    client-id: "1c1ce2beb23947d69435e79d1f0f1bcf"
+    client-secret: "82Ba5cA9F67b496dB7AA1F93EF2508dB"
+    queue: "customer-management.customer"
+    
+sf:
+    username: "nestor.becerril@neoris.com.dev"
+    password: "Mir3ll4132"
+    securityToken: "luA304X7Of87gGeOdt2mB0x9"
+    tokenEndpoint: "https://scotts--dev.my.salesforce.com/services/Soap/u/47.0"
+    externalId: SCT_TX_SAP_ID__c
+    objectType: Account
+    
+Autodiscovery:
+    ID: "16409292"

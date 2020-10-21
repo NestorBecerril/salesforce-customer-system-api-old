@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:anypoint-mq="http://www.mulesoft.org/schema/mule/anypoint-mq"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/anypoint-mq http://www.mulesoft.org/schema/mule/anypoint-mq/current/mule-anypoint-mq.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<sub-flow name="sf-customer-orchestador" doc:id="547501ce-1c6a-4f56-b5be-356d8ecfd92d" >
+		<logger level="INFO" doc:name="Start" doc:id="d010f12e-99f3-4d38-84db-1eb45bb41322" message="Action: Start Process: UpsertCustomer TransactionId: #[vars.transactionId]" />
+		<flow-ref doc:name="setStartTimeTracker" doc:id="5e3dd426-c240-465f-a429-f485f8ebea8f" name="setStartTimeTracker"/>
+		<flow-ref doc:name="prepare-payload" doc:id="40db2d15-b1f5-4f4a-99b8-8a5e7203c558" name="prepare-payload"/>
+		<flow-ref doc:name="customer-upsert" doc:id="f3b28692-b2b3-4a02-b18d-a4f236ff081a" name="customer-upsert"/>
+		<flow-ref doc:name="setEndTimeTracker" doc:id="899c9f06-9c81-4f71-bccc-ead94c6d3277" name="setEndTimeTracker"/>
+		<logger level="INFO" doc:name="End" doc:id="ff84af5e-e341-4bb0-8f5d-4a548e53b0e2" message="Action: Start Process: UpsertCustomer TransactionId: #[vars.transactionId]"/>
+	</sub-flow>
+	<sub-flow name="prepare-payload" doc:id="bb672795-fce0-4ccc-a0fb-a6b6a005598a" >
+		<ee:transform doc:name="Transform Message" doc:id="a1ed3b5d-e4fa-4d64-bba3-b5326d692542" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+import dwls::functionsCustomer
+output application/json
+---
+(payload map (item, index) -> {
+	'SCT_TX_SAP_ID__c': item.aditionalIdentifierNumber,
+	Description: '',
+	Name: item.organisationName,
+	AccountNumber: item.financialInstitutionName,
+	Rating:item.accountRating,
+	//AccountSource: item.accountSource,//picklist
+	//"Type": item.contactTypeCode,//picklist
+	//"SCT_Status__c": item.isActive,//picklist
+	//"SCT_Status__c": true,//picklist
+	"HAW_NUM_Year_Started__c": item.yearSarted,
+	BillingAddress: item.transactionalPartyType.contact.billingAddress.addressType.streetAddressOne,
+	BillingCity: item.transactionalPartyType.contact.billingAddress.addressType.cityCode,
+	BillingCountry: item.transactionalPartyType.contact.billingAddress.addressType.countryCode,
+//	BillingGeocodeAccuracy: item.transactionalPartyType.contact.billingAddress.addressType.,//picklist
+	BillingLatitude: functionsCustomer::getGeographicalCoordinates(0,item.transactionalPartyType.contact.billingAddress.addressType.geographicalCoordinates),
+	BillingLongitude: functionsCustomer::getGeographicalCoordinates(1,item.transactionalPartyType.contact.billingAddress.addressType.geographicalCoordinates),
+	BillingState: item.transactionalPartyType.contact.billingAddress.addressType.provinceCode,
+	BillingStreet: item.transactionalPartyType.contact.billingAddress.addressType.streetAddressOne,
+	ShippingCity: item.transactionalPartyType.contact.shippingAddress.addressType.cityCode,
+	ShippingCountry: item.transactionalPartyType.contact.shippingAddress.addressType.countryCode,
+//	ShippingGeocodeAccuracy: item.transactionalPartyType.contact.shippingAddress.addressType.,//picklist
+	ShippingLatitude: functionsCustomer::getGeographicalCoordinates(0,item.transactionalPartyType.contact.shippingAddress.addressType.geographicalCoordinates),
+	ShippingLongitude: functionsCustomer::getGeographicalCoordinates(1,item.transactionalPartyType.contact.shippingAddress.addressType.geographicalCoordinates),
+	ShippingState: item.transactionalPartyType.contact.shippingAddress.addressType.provinceCode,
+	ShippingStreet: item.transactionalPartyType.contact.shippingAddress.addressType.streetAddressOne,
+	ShippingPostalCode: item.transactionalPartyType.contact.shippingAddress.addressType.postalCode,
+	Phone: functionsCustomer::getChanel('Phone',item.transactionalPartyType.contact.contactType default []),
+	Site: functionsCustomer::getChanel('Site',item.transactionalPartyType.contact.contactType default []),
+	Fax: functionsCustomer::getChanel('Fax',item.transactionalPartyType.contact.contactType default [])
+})]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="externalId" ><![CDATA[%dw 2.0
+output application/json
+---
+p('sf.externalId')]]></ee:set-variable>
+				<ee:set-variable variableName="objectType" ><![CDATA[%dw 2.0
+output application/json
+---
+p('sf.objectType')]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+	</sub-flow>
+</mule>
